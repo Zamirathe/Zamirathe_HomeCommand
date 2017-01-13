@@ -54,12 +54,12 @@ namespace ZaupHomeCommand
         public void Execute(IRocketPlayer caller, string[] bed)
         {
             UnturnedPlayer playerid = (UnturnedPlayer)caller;
-            Logger.Log(playerid.IsAdmin.ToString() + " is admin");
-            Logger.Log(playerid.Features.GodMode.ToString() + " is god mode");
+            Rocket.Core.Logging.Logger.Log(playerid.IsAdmin.ToString() + " is admin");
+            Rocket.Core.Logging.Logger.Log(playerid.Features.GodMode.ToString() + " is god mode");
             HomePlayer homeplayer = playerid.GetComponent<HomePlayer>();
-            Logger.Log(homeplayer.name + " name");
+            Rocket.Core.Logging.Logger.Log(homeplayer.name + " name");
             object[] cont = HomeCommand.CheckConfig(playerid);
-            Logger.Log(cont[1].ToString());
+            Rocket.Core.Logging.Logger.Log(cont[1].ToString());
             if (!(bool)cont[0]) return;
             // A bed was found, so let's run a few checks.
             homeplayer.GoHome((Vector3)cont[1], (byte)cont[2], playerid);
