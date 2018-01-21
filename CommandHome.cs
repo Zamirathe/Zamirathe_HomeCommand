@@ -54,6 +54,13 @@ namespace ZaupHomeCommand
         public void Execute(IRocketPlayer caller, string[] bed)
         {
             UnturnedPlayer playerid = (UnturnedPlayer)caller;
+            Vector3 bedPos;
+            byte bedRot;
+            if (!BarricadeManager.tryGetBed(playerid.CSteamID, out bedPos, out bedRot))
+            {
+                UnturnedChat.Say(playerid, String.Format(HomeCommand.Instance.Configuration.Instance.NoBedMsg, playerid.CharacterName));
+                return;
+            }
             Rocket.Core.Logging.Logger.Log(playerid.IsAdmin.ToString() + " is admin");
             Rocket.Core.Logging.Logger.Log(playerid.Features.GodMode.ToString() + " is god mode");
             HomePlayer homeplayer = playerid.GetComponent<HomePlayer>();
