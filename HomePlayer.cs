@@ -12,16 +12,16 @@ namespace ZaupHomeCommand
 {
     public class HomePlayer : UnturnedPlayerComponent
     {
-        private bool GoingHome;
-        private DateTime LastCalledHomeCommand;
-        private Vector3 LastCalledHomePos;
-        private bool waitrestricted;
-        private byte waittime;
-        private bool movementrestricted;
-        private bool cangohome;
-        private Vector3 bedPos;
-        private byte bedRot;
-        private UnturnedPlayer p;
+        private bool _goingHome;
+        private DateTime _lastCalledHomeCommand;
+        private Vector3 _lastCalledHomePos;
+        private bool _waitRestricted;
+        private byte _waitTime;
+        private bool _movementRestricted;
+        private bool _canGoHome;
+        private Vector3 _bedPos;
+        private byte _bedRot;
+        private UnturnedPlayer _player;
 
         public void Awake()
         {
@@ -30,31 +30,31 @@ namespace ZaupHomeCommand
         }
         protected override void Load()
         {
-            this.GoingHome = false;
-            this.cangohome = false;
+            _goingHome = false;
+            _canGoHome = false;
         }
         public void GoHome(Vector3 bedPos, byte bedRot, UnturnedPlayer player)
         {
             Rocket.Core.Logging.Logger.Log("starting gohome");
-            this.waitrestricted = HomeCommand.Instance.Configuration.Instance.TeleportWait;
-            this.movementrestricted = HomeCommand.Instance.Configuration.Instance.MovementRestriction;
-            this.p = player;
-            this.bedPos = Vector3.up + bedPos;
-            this.bedRot = bedRot;
+            _waitRestricted = HomeCommand.Instance.Configuration.Instance.TeleportWait;
+            _movementRestricted = HomeCommand.Instance.Configuration.Instance.MovementRestriction;
+            _player = player;
+            _bedPos = Vector3.up + bedPos;
+            _bedRot = bedRot;
 
-            if (this.waitrestricted)
+            if (_waitRestricted)
             {
                 // We have to wait to teleport now find out how long
-                this.LastCalledHomeCommand = DateTime.Now;
+                _lastCalledHomeCommand = DateTime.Now;
                 if (HomeCommand.Instance.WaitGroups.ContainsKey("all"))
                 {
-                    HomeCommand.Instance.WaitGroups.TryGetValue("all", out this.waittime);
+                    HomeCommand.Instance.WaitGroups.TryGetValue("all", out _waitTime);
                 }
                 else
                 {
                     if (player.IsAdmin && HomeCommand.Instance.WaitGroups.ContainsKey("admin"))
                     {
-                        HomeCommand.Instance.WaitGroups.TryGetValue("admin", out this.waittime);
+                        HomeCommand.Instance.WaitGroups.TryGetValue("admin", out _waitTime);
                     }
                     else
                     {
@@ -77,64 +77,64 @@ namespace ZaupHomeCommand
                         }
                         Array.Sort(time2);
                         // Take the lowest time.
-                        this.waittime = time2[0];
+                        _waitTime = time2[0];
                     }
                 }
-                if (this.movementrestricted)
+                if (_movementRestricted)
                 {
-                    this.LastCalledHomePos = this.transform.position;
-                    UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.FoundBedWaitNoMoveMsg, player.CharacterName, this.waittime));
+                    _lastCalledHomePos = this.transform.position;
+                    UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.FoundBedWaitNoMoveMsg, player.CharacterName, this._waitTime));
                 }
                 else
                 {
-                    UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.FoundBedNowWaitMsg, player.CharacterName, this.waittime));
+                    UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.FoundBedNowWaitMsg, player.CharacterName, _waitTime));
                 }
             }
             else
             {
-                this.cangohome = true;
+                this._canGoHome = true;
             }
-            this.GoingHome = true;
-            this.DoGoHome();
+            _goingHome = true;
+            DoGoHome();
         }
         private void DoGoHome()
         {
             Rocket.Core.Logging.Logger.Log("starting dogohome");
-            if (!this.cangohome) return;
-            UnturnedChat.Say(this.p, String.Format(HomeCommand.Instance.Configuration.Instance.TeleportMsg, this.p.CharacterName));
-            this.p.Teleport(this.bedPos, this.bedRot);
-            this.cangohome = false;
-            this.GoingHome = false;
+            if (!_canGoHome) return;
+            UnturnedChat.Say(_player, String.Format(HomeCommand.Instance.Configuration.Instance.TeleportMsg, _player.CharacterName));
+            _player.Teleport(_bedPos, _bedRot);
+            _canGoHome = false;
+            _goingHome = false;
         }
         public void FixedUpdate()
         {
-            if (!this.GoingHome) return;
-            if (this.p.Dead)
+            if (!_goingHome) return;
+            if (_player.Dead)
             {
                 // Abort teleport, they died.
-                UnturnedChat.Say(this.p, String.Format(HomeCommand.Instance.Configuration.Instance.NoTeleportDiedMsg, this.p.CharacterName));
-                this.GoingHome = false;
-                this.cangohome = false;
+                UnturnedChat.Say(_player, string.Format(HomeCommand.Instance.Configuration.Instance.NoTeleportDiedMsg, _player.CharacterName));
+                _goingHome = false;
+                _canGoHome = false;
                 return;
             }
-            if (this.movementrestricted)
+            if (_movementRestricted)
             {
-                if (Vector3.Distance(this.p.Position, this.LastCalledHomePos) > 0.1)
+                if (Vector3.Distance(this._player.Position, _lastCalledHomePos) > 0.1)
                 {
                     // Abort teleport, they moved.
-                    UnturnedChat.Say(this.p, String.Format(HomeCommand.Instance.Configuration.Instance.UnableMoveSinceMoveMsg, this.p.CharacterName));
-                    this.GoingHome = false;
-                    this.cangohome = false;
+                    UnturnedChat.Say(_player, String.Format(HomeCommand.Instance.Configuration.Instance.UnableMoveSinceMoveMsg, _player.CharacterName));
+                    _goingHome = false;
+                    _canGoHome = false;
                     return;
                 }
             }
-            if (this.waitrestricted)
+            if (_waitRestricted)
             {
-                if ((DateTime.Now - this.LastCalledHomeCommand).TotalSeconds < this.waittime) return;
+                if ((DateTime.Now - _lastCalledHomeCommand).TotalSeconds < this._waitTime) return;
             }
             // We made it this far, we can go home.
-            this.cangohome = true;
-            this.DoGoHome();
+            _canGoHome = true;
+            DoGoHome();
         }
     }
 }

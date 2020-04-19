@@ -15,8 +15,6 @@ namespace ZaupHomeCommand
 {
     public class HomeCommand : RocketPlugin<HomeCommandConfiguration>
     {
-        public static bool running;
-        public static DateTime start;
         public Dictionary<string, byte> WaitGroups;
         public static HomeCommand Instance;
 
@@ -35,17 +33,17 @@ namespace ZaupHomeCommand
             
             object[] returnv = { false, null, null };
             // First check if command is enabled.
-            if (!HomeCommand.Instance.Configuration.Instance.Enabled)
+            if (!Instance.Configuration.Instance.Enabled)
             {
                 // Command disabled.
-                UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.DisabledMsg, player.CharacterName));
+                UnturnedChat.Say(player, String.Format(Instance.Configuration.Instance.DisabledMsg, player.CharacterName));
                 return returnv;
             }
             // It is enabled, but are they in a vehicle?
             if (player.Stance == EPlayerStance.DRIVING || player.Stance == EPlayerStance.SITTING)
             {
                 // They are in a vehicle.
-                UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.NoVehicleMsg, player.CharacterName));
+                UnturnedChat.Say(player, String.Format(Instance.Configuration.Instance.NoVehicleMsg, player.CharacterName));
                 return returnv;
             }
             // They aren't in a vehicle, so check if they have a bed.    
@@ -54,7 +52,7 @@ namespace ZaupHomeCommand
             if (!BarricadeManager.tryGetBed(player.CSteamID, out bedPos, out bedRot))
             {
                 // Bed not found.
-                UnturnedChat.Say(player, String.Format(HomeCommand.Instance.Configuration.Instance.NoBedMsg, player.CharacterName));
+                UnturnedChat.Say(player, String.Format(Instance.Configuration.Instance.NoBedMsg, player.CharacterName));
                 return returnv;
             }
             object[] returnv2 = { true, bedPos, bedRot };
