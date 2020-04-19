@@ -20,9 +20,9 @@ namespace ZaupHomeCommand
 
         protected override void Load()
         {
-            HomeCommand.Instance = this;
+            Instance = this;
             WaitGroups = new Dictionary<string, byte>();
-            foreach (HomeGroup hg in this.Configuration.Instance.WaitGroups)
+            foreach (HomeGroup hg in Configuration.Instance.WaitGroups)
             {
                 WaitGroups.Add(hg.Id, hg.Wait);
             }

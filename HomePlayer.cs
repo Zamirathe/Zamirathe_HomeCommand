@@ -39,7 +39,7 @@ namespace ZaupHomeCommand
             _waitRestricted = HomeCommand.Instance.Configuration.Instance.TeleportWait;
             _movementRestricted = HomeCommand.Instance.Configuration.Instance.MovementRestriction;
             _player = player;
-            _bedPos = Vector3.up + bedPos;
+            _bedPos = Vector3.up + bedPos + new Vector3(0f, 0.5f, 0f);
             _bedRot = bedRot;
 
             if (_waitRestricted)
@@ -119,7 +119,7 @@ namespace ZaupHomeCommand
             }
             if (_movementRestricted)
             {
-                if (Vector3.Distance(this._player.Position, _lastCalledHomePos) > 0.1)
+                if (Vector3.Distance(_player.Position, _lastCalledHomePos) > 0.1)
                 {
                     // Abort teleport, they moved.
                     UnturnedChat.Say(_player, String.Format(HomeCommand.Instance.Configuration.Instance.UnableMoveSinceMoveMsg, _player.CharacterName));
@@ -130,7 +130,7 @@ namespace ZaupHomeCommand
             }
             if (_waitRestricted)
             {
-                if ((DateTime.Now - _lastCalledHomeCommand).TotalSeconds < this._waitTime) return;
+                if ((DateTime.Now - _lastCalledHomeCommand).TotalSeconds < _waitTime) return;
             }
             // We made it this far, we can go home.
             _canGoHome = true;
