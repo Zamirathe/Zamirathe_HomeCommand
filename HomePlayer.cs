@@ -26,7 +26,6 @@ namespace ZaupHomeCommand
         public void Awake()
         {
             Rocket.Core.Logging.Logger.Log("Homeplayer is awake");
-            Console.Write("Homeplayer is awake.");
         }
         protected override void Load()
         {
@@ -47,23 +46,20 @@ namespace ZaupHomeCommand
                 // We have to wait to teleport now find out how long
                 _lastCalledHomeCommand = DateTime.Now;
                 if (HomeCommand.Instance.waitGroups.ContainsKey("all"))
-                {
                     HomeCommand.Instance.waitGroups.TryGetValue("all", out _waitTime);
-                }
+                
                 else
                 {
                     if (player.IsAdmin && HomeCommand.Instance.waitGroups.ContainsKey("admin"))
-                    {
                         HomeCommand.Instance.waitGroups.TryGetValue("admin", out _waitTime);
-                    }
+                    
                     else
                     {
                         // Either not an admin or they don't get special wait restrictions.
                         List<RocketPermissionsGroup> hg = R.Permissions.GetGroups(player, true);
                         if (hg.Count <= 0)
-                        {
                             Rocket.Core.Logging.Logger.Log("There was an error as a player has no groups!");
-                        }
+                        
                         byte[] time2 = new byte[hg.Count];
                         for (byte g=0;g<hg.Count;g++)
                         {
@@ -89,15 +85,13 @@ namespace ZaupHomeCommand
                             player.CharacterName, _waitTime));
             }
             else
-            {
                 canGoHome = true;
-            }
+            
             _goingHome = true;
             StartCoroutine(DoGoHome());
         }
         private IEnumerator DoGoHome()
         {
-            CurrentHomePlayers.Add(_player, this);
             if (_player.Dead)
             {
                 // Abort teleport, they died.
@@ -117,14 +111,12 @@ namespace ZaupHomeCommand
             _player.Teleport(_bedPos, _bedRot);
             canGoHome = false;
             _goingHome = false;
+            CurrentHomePlayers.Remove(_player);
         }
         public void FixedUpdate()
         {
-            if (!_goingHome) return;
-            if (_waitRestricted)
-            {
-                if ((DateTime.Now - _lastCalledHomeCommand).TotalSeconds < _waitTime) return;
-            }
+            if (_waitRestricted && (DateTime.Now - _lastCalledHomeCommand).TotalSeconds < _waitTime || !_goingHome) return;
+            
             // We made it this far, we can go home.
             canGoHome = true;
             StartCoroutine(DoGoHome());

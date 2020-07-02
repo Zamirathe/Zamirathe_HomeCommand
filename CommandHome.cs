@@ -15,7 +15,8 @@ namespace ZaupHomeCommand
 
         public List<string> Aliases => new List<string>();
 
-        public List<string> Permissions => new List<string>() { };
+        //?????
+        public List<string> Permissions => new List<string>();
 
         public AllowedCaller AllowedCaller => AllowedCaller.Player;
 

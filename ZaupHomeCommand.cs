@@ -19,16 +19,17 @@ namespace ZaupHomeCommand
         {
             Instance = this;
             waitGroups = new Dictionary<string, byte>();
+            
             foreach (HomeGroup hg in Configuration.Instance.WaitGroups)
-            {
                 waitGroups.Add(hg.Id, hg.Wait);
-            }
+            
 
             UnturnedPlayerEvents.OnPlayerUpdatePosition += (player, position) =>
             {
-                if (HomePlayer.CurrentHomePlayers.ContainsKey(player) && HomePlayer.CurrentHomePlayers[player])
-                    HomePlayer.CurrentHomePlayers[player].canGoHome = false;
-                    
+                if (!HomePlayer.CurrentHomePlayers.ContainsKey(player) ||
+                    !HomePlayer.CurrentHomePlayers[player].movementRestricted) return;
+                HomePlayer.CurrentHomePlayers[player].canGoHome = false;
+                UnturnedChat.Say(player, string.Format(Instance.Configuration.Instance.UnableMoveSinceMoveMsg, player.CharacterName));
             };
         }
         // All we are doing here is checking the config to see if anything like restricted movement or time restriction is enforced.
@@ -51,12 +52,10 @@ namespace ZaupHomeCommand
                 return returnv;
             }
             // They aren't in a vehicle, so check if they have a bed.    
-            Vector3 bedPos;
-            byte bedRot;
-            if (!BarricadeManager.tryGetBed(player.CSteamID, out bedPos, out bedRot))
+            if (!BarricadeManager.tryGetBed(player.CSteamID, out var bedPos, out var bedRot))
             {
                 // Bed not found.
-                UnturnedChat.Say(player, String.Format(Instance.Configuration.Instance.NoBedMsg, player.CharacterName));
+                UnturnedChat.Say(player, string.Format(Instance.Configuration.Instance.NoBedMsg, player.CharacterName));
                 return returnv;
             }
             object[] returnv2 = { true, bedPos, bedRot };
