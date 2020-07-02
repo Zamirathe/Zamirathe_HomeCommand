@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using Rocket.Core;
 using Rocket.Unturned.Chat;
@@ -12,7 +13,6 @@ namespace ZaupHomeCommand
     {
         private bool _goingHome;
         private DateTime _lastCalledHomeCommand;
-        private Vector3 _lastCalledHomePos;
         private bool _waitRestricted;
         private byte _waitTime;
         public bool movementRestricted;
@@ -80,24 +80,22 @@ namespace ZaupHomeCommand
                         _waitTime = time2[0];
                     }
                 }
-                if (movementRestricted)
-                {
-                    _lastCalledHomePos = transform.position;
-                    UnturnedChat.Say(player, string.Format(HomeCommand.Instance.Configuration.Instance.FoundBedWaitNoMoveMsg, player.CharacterName, this._waitTime));
-                }
-                else
-                {
-                    UnturnedChat.Say(player, string.Format(HomeCommand.Instance.Configuration.Instance.FoundBedNowWaitMsg, player.CharacterName, _waitTime));
-                }
+
+                UnturnedChat.Say(player,
+                    movementRestricted
+                        ? string.Format(HomeCommand.Instance.Configuration.Instance.FoundBedWaitNoMoveMsg,
+                            player.CharacterName, _waitTime)
+                        : string.Format(HomeCommand.Instance.Configuration.Instance.FoundBedNowWaitMsg,
+                            player.CharacterName, _waitTime));
             }
             else
             {
                 canGoHome = true;
             }
             _goingHome = true;
-            DoGoHome();
+            StartCoroutine(DoGoHome());
         }
-        private void DoGoHome()
+        private IEnumerator DoGoHome()
         {
             CurrentHomePlayers.Add(_player, this);
             if (_player.Dead)
@@ -107,13 +105,13 @@ namespace ZaupHomeCommand
                 _goingHome = false;
                 canGoHome = false;
                 CurrentHomePlayers.Remove(_player);
-                return;
+                yield break;
             }
             Rocket.Core.Logging.Logger.Log("starting dogohome");
             if (!canGoHome)
             {
                 CurrentHomePlayers.Remove(_player);
-                return;
+                yield break;
             }
             UnturnedChat.Say(_player, string.Format(HomeCommand.Instance.Configuration.Instance.TeleportMsg, _player.CharacterName));
             _player.Teleport(_bedPos, _bedRot);
@@ -129,7 +127,7 @@ namespace ZaupHomeCommand
             }
             // We made it this far, we can go home.
             canGoHome = true;
-            DoGoHome();
+            StartCoroutine(DoGoHome());
         }
     }
 }
