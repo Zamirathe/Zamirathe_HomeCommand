@@ -24,7 +24,7 @@ namespace ZaupHomeCommand
         {
             UnturnedPlayer playerId = (UnturnedPlayer)caller;
             HomePlayer homePlayer = playerId.GetComponent<HomePlayer>();
-            object[] cont = HomeCommand.CheckConfig(playerId);
+            object[] cont = ZaupHomeCommand.CheckConfig(playerId);
             if (!(bool)cont[0]) return;
             // A bed was found, so let's run a few checks.
             HomePlayer.CurrentHomePlayers.Add(playerId, homePlayer);

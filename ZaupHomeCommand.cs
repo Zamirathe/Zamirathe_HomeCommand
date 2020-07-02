@@ -10,10 +10,10 @@ using UnityEngine;
 
 namespace ZaupHomeCommand
 {
-    public class HomeCommand : RocketPlugin<HomeCommandConfiguration>
+    public class ZaupHomeCommand : RocketPlugin<HomeCommandConfiguration>
     {
         public Dictionary<string, byte> waitGroups;
-        public static HomeCommand Instance;
+        public static ZaupHomeCommand Instance;
 
         protected override void Load()
         {

@@ -35,8 +35,8 @@ namespace ZaupHomeCommand
         public void GoHome(Vector3 bedPos, byte bedRot, UnturnedPlayer player)
         {
             Rocket.Core.Logging.Logger.Log("starting gohome");
-            _waitRestricted = HomeCommand.Instance.Configuration.Instance.TeleportWait;
-            movementRestricted = HomeCommand.Instance.Configuration.Instance.MovementRestriction;
+            _waitRestricted = ZaupHomeCommand.Instance.Configuration.Instance.TeleportWait;
+            movementRestricted = ZaupHomeCommand.Instance.Configuration.Instance.MovementRestriction;
             _player = player;
             _bedPos = Vector3.up + bedPos + new Vector3(0f, 0.5f, 0f);
             _bedRot = bedRot;
@@ -45,13 +45,13 @@ namespace ZaupHomeCommand
             {
                 // We have to wait to teleport now find out how long
                 _lastCalledHomeCommand = DateTime.Now;
-                if (HomeCommand.Instance.waitGroups.ContainsKey("all"))
-                    HomeCommand.Instance.waitGroups.TryGetValue("all", out _waitTime);
+                if (ZaupHomeCommand.Instance.waitGroups.ContainsKey("all"))
+                    ZaupHomeCommand.Instance.waitGroups.TryGetValue("all", out _waitTime);
                 
                 else
                 {
-                    if (player.IsAdmin && HomeCommand.Instance.waitGroups.ContainsKey("admin"))
-                        HomeCommand.Instance.waitGroups.TryGetValue("admin", out _waitTime);
+                    if (player.IsAdmin && ZaupHomeCommand.Instance.waitGroups.ContainsKey("admin"))
+                        ZaupHomeCommand.Instance.waitGroups.TryGetValue("admin", out _waitTime);
                     
                     else
                     {
@@ -65,7 +65,7 @@ namespace ZaupHomeCommand
                         {
                             
                             RocketPermissionsGroup hgr = hg[g];
-                            HomeCommand.Instance.waitGroups.TryGetValue(hgr.Id, out time2[g]);
+                            ZaupHomeCommand.Instance.waitGroups.TryGetValue(hgr.Id, out time2[g]);
                             if (time2[g] <= 0)
                             {
                                 time2[g] = 60;
@@ -79,9 +79,9 @@ namespace ZaupHomeCommand
 
                 UnturnedChat.Say(player,
                     movementRestricted
-                        ? string.Format(HomeCommand.Instance.Configuration.Instance.FoundBedWaitNoMoveMsg,
+                        ? string.Format(ZaupHomeCommand.Instance.Configuration.Instance.FoundBedWaitNoMoveMsg,
                             player.CharacterName, _waitTime)
-                        : string.Format(HomeCommand.Instance.Configuration.Instance.FoundBedNowWaitMsg,
+                        : string.Format(ZaupHomeCommand.Instance.Configuration.Instance.FoundBedNowWaitMsg,
                             player.CharacterName, _waitTime));
             }
             else
@@ -95,7 +95,7 @@ namespace ZaupHomeCommand
             if (_player.Dead)
             {
                 // Abort teleport, they died.
-                UnturnedChat.Say(_player, string.Format(HomeCommand.Instance.Configuration.Instance.NoTeleportDiedMsg, _player.CharacterName));
+                UnturnedChat.Say(_player, string.Format(ZaupHomeCommand.Instance.Configuration.Instance.NoTeleportDiedMsg, _player.CharacterName));
                 _goingHome = false;
                 canGoHome = false;
                 CurrentHomePlayers.Remove(_player);
@@ -107,7 +107,7 @@ namespace ZaupHomeCommand
                 CurrentHomePlayers.Remove(_player);
                 yield break;
             }
-            UnturnedChat.Say(_player, string.Format(HomeCommand.Instance.Configuration.Instance.TeleportMsg, _player.CharacterName));
+            UnturnedChat.Say(_player, string.Format(ZaupHomeCommand.Instance.Configuration.Instance.TeleportMsg, _player.CharacterName));
             _player.Teleport(_bedPos, _bedRot);
             canGoHome = false;
             _goingHome = false;
