@@ -1,31 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-
-using Rocket.API;
 using Rocket.Core.Plugins;
 using Rocket.Unturned;
 using Rocket.Unturned.Chat;
-using Rocket.Unturned.Plugins;
+using Rocket.Unturned.Events;
 using Rocket.Unturned.Player;
 using SDG.Unturned;
 using UnityEngine;
-using Steamworks;
 
 namespace ZaupHomeCommand
 {
     public class HomeCommand : RocketPlugin<HomeCommandConfiguration>
     {
-        public Dictionary<string, byte> WaitGroups;
+        public Dictionary<string, byte> waitGroups;
         public static HomeCommand Instance;
 
         protected override void Load()
         {
             Instance = this;
-            WaitGroups = new Dictionary<string, byte>();
+            waitGroups = new Dictionary<string, byte>();
             foreach (HomeGroup hg in Configuration.Instance.WaitGroups)
             {
-                WaitGroups.Add(hg.Id, hg.Wait);
+                waitGroups.Add(hg.Id, hg.Wait);
             }
+
+            UnturnedPlayerEvents.OnPlayerUpdatePosition += (player, position) =>
+            {
+                if (HomePlayer.CurrentHomePlayers.ContainsKey(player) && HomePlayer.CurrentHomePlayers[player])
+                    HomePlayer.CurrentHomePlayers[player].canGoHome = false;
+                    
+            };
         }
         // All we are doing here is checking the config to see if anything like restricted movement or time restriction is enforced.
         public static object[] CheckConfig(UnturnedPlayer player)
@@ -36,14 +40,14 @@ namespace ZaupHomeCommand
             if (!Instance.Configuration.Instance.Enabled)
             {
                 // Command disabled.
-                UnturnedChat.Say(player, String.Format(Instance.Configuration.Instance.DisabledMsg, player.CharacterName));
+                UnturnedChat.Say(player, string.Format(Instance.Configuration.Instance.DisabledMsg, player.CharacterName));
                 return returnv;
             }
             // It is enabled, but are they in a vehicle?
             if (player.Stance == EPlayerStance.DRIVING || player.Stance == EPlayerStance.SITTING)
             {
                 // They are in a vehicle.
-                UnturnedChat.Say(player, String.Format(Instance.Configuration.Instance.NoVehicleMsg, player.CharacterName));
+                UnturnedChat.Say(player, string.Format(Instance.Configuration.Instance.NoVehicleMsg, player.CharacterName));
                 return returnv;
             }
             // They aren't in a vehicle, so check if they have a bed.    
