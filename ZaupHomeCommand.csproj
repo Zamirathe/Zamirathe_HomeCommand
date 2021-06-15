@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ZaupHomeCommand</RootNamespace>
     <AssemblyName>ZaupHomeCommand</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -30,30 +31,29 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Assembly-CSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Assembly-CSharp.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Assembly-CSharp">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\Assembly-CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Assembly-CSharp-firstpass, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Assembly-CSharp-firstpass.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Rocket.API">
+      <HintPath>..\Rocket.API.dll</HintPath>
     </Reference>
-    <Reference Include="Rocket.API, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Rocket.API.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Rocket.Core">
+      <HintPath>..\Rocket.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Rocket.Core, Version=1.2.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Rocket.Core.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="Rocket.Unturned">
+      <HintPath>..\Rocket.Unturned.dll</HintPath>
     </Reference>
-    <Reference Include="Rocket.Unturned, Version=4.4.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\Rocket.Unturned.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="SDG.Glazier.Runtime">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\SDG.Glazier.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="SDG.NetPak.Runtime">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\SDG.NetPak.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="SDG.NetTransport">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\SDG.NetTransport.dll</HintPath>
+    </Reference>
+    <Reference Include="Steamworks.NET">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\Steamworks.NET.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -62,18 +62,21 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UnityEngine, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\UnityEngine.dll</HintPath>
-      <Private>False</Private>
+    <Reference Include="UnityEngine">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\..\..\Steam\steamapps\common\U3DS\Unturned_Data\Managed\UnityEngine.PhysicsModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandHome.cs" />
-    <Compile Include="ZaupHomeCommand.cs" />
-    <Compile Include="ZaupHomeCommandConfiguration.cs" />
-    <Compile Include="HomeGroups.cs" />
-    <Compile Include="HomePlayer.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="PlayerHomeBehaviour.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
