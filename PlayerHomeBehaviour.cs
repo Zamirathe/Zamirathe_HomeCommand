@@ -86,7 +86,7 @@ namespace ZaupHomeCommand
             if (conf.TeleportWait)
             {
                 LastCalledHomeCommand = DateTime.Now;
-                LastCalledHomePos = transform.position;
+                LastCalledHomePos = up.Position;
 
                 if (!up.IsAdmin)
                 {

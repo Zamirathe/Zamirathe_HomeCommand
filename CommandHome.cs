@@ -1,5 +1,6 @@
 ﻿using Rocket.API;
 using Rocket.Unturned.Player;
+using SDG.Unturned;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,7 +22,7 @@ namespace ZaupHomeCommand
         public void Execute(IRocketPlayer caller, string[] bed)
         {
             var up = (UnturnedPlayer)caller;
-            up.Player.gameObject.getOrAddComponent<PlayerHomeBehaviour>().TryTeleport();
+            up.Player.gameObject.GetOrAddComponent<PlayerHomeBehaviour>().TryTeleport();
         }
     }
 }
