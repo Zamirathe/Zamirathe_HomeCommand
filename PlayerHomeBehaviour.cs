@@ -14,8 +14,6 @@ namespace ZaupHomeCommand
     {
         public PlayerHomeBehaviour()
         {
-            p = GetComponent<Player>();
-            up = UnturnedPlayer.FromPlayer(p);
         }
 
         public DateTime LastCalledHomeCommand { get; private set; }
@@ -27,9 +25,6 @@ namespace ZaupHomeCommand
 
         bool WaitingForTeleport, AllowedToTeleport;
 
-        readonly Player p;
-        readonly UnturnedPlayer up;
-
         void FixedUpdate()
         {
             if (inst.State != PluginState.Loaded)
@@ -39,14 +34,14 @@ namespace ZaupHomeCommand
                 return;
 
             var msg = "";
-            if (up.Dead) // Abort teleport, player died.
+            if (Player.Dead) // Abort teleport, player died.
                 msg = NoTeleportDiedMsg;
-            else if (conf.MovementRestriction && Vector3.Distance(up.Position, LastCalledHomePos) > 0.1) // Abort teleport, player moved.
+            else if (conf.MovementRestriction && Vector3.Distance(Player.Position, LastCalledHomePos) > 0.1) // Abort teleport, player moved.
                 msg = UnableMoveSinceMoveMsg;
 
             if (msg != "")
             {
-                UnturnedChat.Say(up, inst.Translate(msg, up.CharacterName));
+                UnturnedChat.Say(Player, inst.Translate(msg, Player.CharacterName));
                 WaitingForTeleport = false;
                 AllowedToTeleport = false;
                 return;
@@ -59,21 +54,21 @@ namespace ZaupHomeCommand
 
         public bool CheckHomeConditions(out Vector3 pos, out byte rot)
         {
-            pos = up.Position;
-            rot = up.Player.look.rot;
+            pos = Player.Position;
+            rot = Player.Player.look.rot;
             try
             {
                 if (!conf.Enabled)
                     throw new ArgumentException(DisabledMsg); // Disabled.
-                if (up.Stance == EPlayerStance.DRIVING || up.Stance == EPlayerStance.SITTING)
+                if (Player.Stance == EPlayerStance.DRIVING || Player.Stance == EPlayerStance.SITTING)
                     throw new ArgumentException(NoVehicleMsg); // In the vehicle.
-                if (p.animator.gesture == EPlayerGesture.ARREST_START && conf.DontAllowCuffed)
+                if (Player.Player.animator.gesture == EPlayerGesture.ARREST_START && conf.DontAllowCuffed)
                     throw new ArgumentException(CuffedMsg); // Cuffed.
-                if (!BarricadeManager.tryGetBed(up.CSteamID, out pos, out rot))
+                if (!BarricadeManager.tryGetBed(Player.CSteamID, out pos, out rot))
                     throw new ArgumentException(NoBedMsg); // Bed not found.
                 return true;
             }
-            catch (ArgumentException ex) { UnturnedChat.Say(up, inst.Translate(ex.Message, up.CharacterName)); }
+            catch (ArgumentException ex) { UnturnedChat.Say(Player, inst.Translate(ex.Message, Player.CharacterName)); }
             return false;
         }
 
@@ -86,13 +81,13 @@ namespace ZaupHomeCommand
             if (conf.TeleportWait)
             {
                 LastCalledHomeCommand = DateTime.Now;
-                LastCalledHomePos = up.Position;
+                LastCalledHomePos = Player.Position;
 
-                if (!up.IsAdmin)
+                if (!Player.IsAdmin)
                 {
                     TimeToWait =
                         R.Permissions
-                        .GetGroups(up, false)
+                        .GetGroups(Player, false)
                         .Select(x => WaitGroups.TryGetValue(x.Id, out var time) ? time : -1)
                         .OrderBy(x => x)
                         .FirstOrDefault(x => x > 0);
@@ -100,9 +95,9 @@ namespace ZaupHomeCommand
                 }
                 else TimeToWait = conf.AdminWait;
 
-                UnturnedChat.Say(up, inst.Translate(
+                UnturnedChat.Say(Player, inst.Translate(
                     conf.MovementRestriction ? FoundBedWaitNoMoveMsg : FoundBedNowWaitMsg,
-                    up.CharacterName,
+                    Player.CharacterName,
                     TimeToWait));
             }
             else
@@ -115,8 +110,8 @@ namespace ZaupHomeCommand
         {
             if (!AllowedToTeleport) return;
 
-            UnturnedChat.Say(up, inst.Translate(TeleportMsg, up.CharacterName));
-            p.teleportToLocationUnsafe(LastBedPos, LastBedRot); // Hello, Nelson, why did you make safe Teleport for UnturnedPlayer?
+            UnturnedChat.Say(Player, inst.Translate(TeleportMsg, Player.CharacterName));
+            Player.Player.teleportToLocationUnsafe(LastBedPos, LastBedRot); 
             AllowedToTeleport = false;
             WaitingForTeleport = false;
         }
